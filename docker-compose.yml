@@ -26,9 +26,9 @@ services:
       DISABLE_ERROR_REPORTING: "1"
       # 出网代理由核心注入（ADR-0023），这里不写代理变量，写了空值就会把核心的注入顶掉。
     volumes:
-      - ${WONTON_APP_DATA:?需要插件数据目录}/agent:/data/agent
-      - ${WONTON_APP_DATA}/run:/data/run
-      - ${WONTON_APP_DATA}/workspace:/workspace
+      - ${WONTON_BOT_DATA:?需要 Bot 数据目录}/agent:/data/agent
+      - ${WONTON_BOT_DATA}/run:/data/run
+      - ${WONTON_BOT_DATA}/workspace:/workspace
     healthcheck:
       # socket 是首启下载完 CLI、ACP 转发建好后才有；有它才算能接连接。
       test: ["CMD", "test", "-S", "/data/run/acp.sock"]
@@ -59,8 +59,8 @@ services:
       # 适配器还支持 acceptEdits、plan、auto、bypassPermissions（非 root 才有）。
       WONTON_ACP_MODE: default
     volumes:
-      - ${WONTON_APP_DATA}/bridge:/data/bridge
-      - ${WONTON_APP_DATA}/run:/data/run
+      - ${WONTON_BOT_DATA}/bridge:/data/bridge
+      - ${WONTON_BOT_DATA}/run:/data/run
     healthcheck:
       test: ["CMD", "test", "-S", "/data/run/acp.sock"]
       interval: 30s
@@ -89,17 +89,19 @@ x-wonton:
       Claude Code 以 Bot 的身份住进聊天，用它自己的 Anthropic 登录或 key。它住在自己的容器里，
       改文件、跑命令之前经确认卡片问你；Wonton 插件的工具也从聊天里调。
 
-      接上模型网关（要提供 Anthropic Messages 接口）时默认走网关，不用账号。没接网关时，在聊天里或
-      插件页发登录：用 Claude 订阅或 Anthropic Console 登录（粘一次登录码），也可以贴一个自己的
-      Anthropic API key。订阅需要 Pro、Max、Ultra、Team 或 Enterprise；免费版不含 Claude Code。
+      接上模型网关（要提供 Anthropic Messages 接口）时默认走网关，不用账号。没接网关时，在插件页的登录
+      网页（默认 Bot）或聊天里发 /wonton login（这个聊天对应的 Bot）登录：用 Claude 订阅或 Anthropic
+      Console 登录（粘一次登录码），也可以贴一个自己的 Anthropic API key。订阅需要 Pro、Max、Ultra、
+      Team 或 Enterprise；免费版不含 Claude Code。
     en: |
       Claude Code lives in the chat as a bot, signed in with your own Anthropic account or key. It
       works in its own container and asks through confirmation cards before editing files or running
       commands; Wonton plugin tools are called from the chat too.
 
       With a model gateway that speaks Anthropic Messages it goes through the gateway by default,
-      with no account. Without one, sign in from the chat or the plugin page: with a Claude
-      subscription or Anthropic Console (paste one login code), or paste your own Anthropic API key.
+      with no account. Without one, sign in from the login page on the plugin screen (default bot)
+      or send /wonton login in the chat (this chat's bot): with a Claude subscription or Anthropic
+      Console (paste one login code), or paste your own Anthropic API key.
       Subscriptions need Pro, Max, Ultra, Team or Enterprise; the free plan has no Claude Code.
   release_notes:
     zh: 首个版本。模型网关可选，支持 Claude 订阅、Anthropic Console 和 API key 三种登录。
@@ -120,6 +122,8 @@ x-wonton:
         title: { zh: Anthropic API key, en: Anthropic API key }
   bot:
     display_name: { zh: Claude Code, en: Claude Code }
+  bots:
+    services: [agent, bridge]
   permissions:
     - matrix.bot
     - tools

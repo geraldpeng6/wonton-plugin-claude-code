@@ -16,11 +16,12 @@ Claude Code 只讲 Anthropic Messages，OpenAI 兼容地址喂不进去；网关
 
 ## 登录（没接网关时）
 
-在 App 的插件页打开这个插件的网页，或者在聊天里发 `/wonton login`，三选一：
+两个入口：在 App 的插件页打开登录网页，登的是默认 Bot；在聊天里发 `/wonton login`，登的是这个
+聊天对应的 Bot。入口里三选一：
 
-- **Claude 订阅**（Pro、Max、Ultra、Team、Enterprise；免费版不含 Claude Code）：页面上会出现一个
-  claude.com 的链接，在自己电脑或手机的浏览器里打开、同意，页面会给一个登录码，粘回网页的输入框
-  回车。登录态落在容器里，Wonton 不留 token。
+- **Claude 订阅**（Pro、Max、Ultra、Team、Enterprise；免费版不含 Claude Code）：会出现一个
+  claude.com 的链接，在自己电脑或手机的浏览器里打开、同意，页面会给一个登录码，粘回原入口
+  （网页的输入框，或聊天里直接发）。登录态落在容器里，Wonton 不留 token。
 - **Anthropic Console**（给自己账号的 API 用量付费）：流程同上。
 - **Anthropic API key**：在 console.anthropic.com 建一个 key，粘进去就行。
 
