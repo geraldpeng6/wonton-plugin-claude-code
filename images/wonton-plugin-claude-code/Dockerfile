@@ -3,7 +3,7 @@
 FROM ghcr.io/geraldpeng6/wonton-agent-base:0.1.0@sha256:9d6e0ca87c14eee21b5b6503fb52dd863182e7a4f784dd644a4e8cb3f58989d7
 
 COPY agent.toml /etc/wonton-agent/
-COPY --chmod=0755 gateway oauth-login auth-status api-key-login api-key api-key-status /usr/local/lib/wonton-agent/
+COPY --chmod=0755 gateway oauth-login auth-status api-key-login api-key api-key-status web-proxy /usr/local/lib/wonton-agent/
 COPY agent_settings.py /usr/local/lib/wonton-agent/
 COPY prompt.md /usr/local/share/wonton-agent/prompt.md
 # 托管设置：对话框后面没有 ToolSearch 的一轮，MCP 工具直接进工具表。

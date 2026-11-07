@@ -70,6 +70,24 @@ services:
       start_period: 30s
       start_interval: 2s
 
+  # 登录网页的入口：webui 不能指向 Bot 服务（旧核心仍按这条判），而登录页在 agent 容器里（每个 Bot 一份），
+  # 所以架一个全插件一份的转发。插件页只开默认 Bot 的那一份，聊天里的 /wonton login 用当前 Bot。
+  web:
+    image: ghcr.io/geraldpeng6/wonton-plugin-claude-code:0.1.0
+    user: "65532:65532"
+    restart: unless-stopped
+    entrypoint: ["python3", "/usr/local/lib/wonton-agent/web-proxy"]
+    environment:
+      HOME: /data/agent/home
+      WEB_PORT: "8080"
+    healthcheck:
+      # 本地监听和上游都要通：上游没了这台也不该算健康。
+      test: ["CMD", "python3", "-c", "import socket; [socket.create_connection(a, 3).close() for a in [('127.0.0.1', 8080), ('agent-default', 8080)]]"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      start_interval: 2s
+
 x-wonton:
   spec: "0.6"
   id: ai.claude-code
@@ -109,7 +127,7 @@ x-wonton:
     zh: 首个版本。模型网关可选，支持 Claude 订阅、Anthropic Console 和 API key 三种登录。
     en: First release. The model gateway is optional; log in with a Claude subscription, Anthropic Console or an API key.
   webui:
-    service: agent
+    service: web
     port: 8080
     sso: none
   agent:
