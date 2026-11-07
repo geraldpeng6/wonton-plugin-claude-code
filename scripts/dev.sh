@@ -158,7 +158,6 @@ compose() {
   [[ ! -f "$state/compose.subnet.yaml" ]] || files+=(-f "$state/compose.subnet.yaml")
   # 核心镜像的 init 生成的 tuwunel 只挂 tuwunel.toml，可配置里的证书写的是安装目录下的绝对路径，
   # 容器里看不见（2026-11-07 带联邦 TLS 的核心镜像起不来）。这里给同一路径补一份只读挂载。
-  [[ ! -f "$state/compose.secrets.yaml" ]] || files+=(-f "$state/compose.secrets.yaml")
   docker compose -p "wonton-$instance" "${files[@]}" "$@"
 }
 
@@ -180,8 +179,17 @@ up() {
   write_settings
   info "生成密钥和配置（已有的沿用）"
   docker run --rm --user "$(id -u):$(id -g)" -v "$state:$state" "$image" init "$state" "$instance.wonton.localhost" >/dev/null
-  printf 'services:\n  tuwunel:\n    volumes:\n      - ${WONTON_INSTALL_DIR}/secrets:${WONTON_INSTALL_DIR}/secrets:ro\n' \
-    >"$state/compose.secrets.yaml"
+  # 核心镜像的 init 生成的 tuwunel 只挂 tuwunel.toml，可配置里的证书写的是安装目录下的绝对路径，容器里看不见
+  # （2026-11-07 带联邦 TLS 的核心镜像起不来）。直接补进 compose.yaml：冒烟脚本重启时会自己重新读这份文件。
+  python3 - "$state/compose.yaml" <<'PY'
+import sys
+path = sys.argv[1]
+lines = open(path).read().split("\n")
+start = lines.index("  tuwunel:")
+volumes = lines.index("    volumes:", start)
+lines.insert(volumes + 1, "      - ${WONTON_INSTALL_DIR}/secrets:${WONTON_INSTALL_DIR}/secrets:ro")
+open(path, "w").write("\n".join(lines))
+PY
   info "启动核心、身份提供方和 Matrix 服务器（第一次要拉镜像，几分钟）"
   compose up -d --wait --wait-timeout 600 || die "没有在 10 分钟内就绪，看看日志：scripts/dev.sh logs"
   need_env
