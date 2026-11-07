@@ -7,7 +7,7 @@ Wonton 的 Claude Code 插件
 - ACP 适配器：`@agentclientprotocol/claude-agent-acp`（0.101.0），仓库
   https://github.com/agentclientprotocol/claude-agent-acp ，许可证 Apache-2.0，全文见
   `images/wonton-plugin-claude-code/LICENSE.claude-agent-acp`。它随插件镜像分发。
-- Claude Code CLI：Anthropic PBC 的官方程序（2.1.319），经适配器依赖的
+- Claude Code CLI：Anthropic PBC 的官方程序（适配器锁 SDK 0.3.318，随它分发 2.1.318），经适配器依赖的
   `@anthropic-ai/claude-agent-sdk` 以原生二进制分发。许可证为 "SEE LICENSE IN README.md"，
   即 © Anthropic PBC 保留全部权利、受 https://code.claude.com/docs/en/legal-and-compliance
   的商业条款约束（全文见 `images/wonton-plugin-claude-code/LICENSE.claude-code`）。
