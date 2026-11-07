@@ -21,8 +21,6 @@ services:
       NO_BROWSER: "1"
       # MCP 工具直接进工具表：ToolSearch 的延迟加载在网关后面要多一轮，模型常常先答话不调工具。
       ENABLE_TOOL_SEARCH: "false"
-      # 去掉 SDK 默认的 mcp__<服务名>__ 前缀，工具就叫 wonton__…，和文档、提示里的名字一致。
-      CLAUDE_AGENT_SDK_MCP_NO_PREFIX: "1"
       # 关掉自动更新、遥测、错误上报和非必要请求；官方 devcontainer 也是这么配的。
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
       DISABLE_AUTOUPDATER: "1"
