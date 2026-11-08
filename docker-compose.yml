@@ -126,8 +126,8 @@ x-wonton:
       Console (paste one login code), or paste your own Anthropic API key.
       Subscriptions need Pro, Max, Ultra, Team or Enterprise; the free plan has no Claude Code.
   release_notes:
-    zh: 首个版本。模型网关可选，支持 Claude 订阅、Anthropic Console 和 API key 三种登录。
-    en: First release. The model gateway is optional; log in with a Claude subscription, Anthropic Console or an API key.
+    zh: "适配新版核心的名单变量名，旧核心照常能装，用起来没有变化。"
+    en: "Adapts to the new core's allow-list variable name; still installs on older cores, nothing changes in use."
   webui:
     service: web
     port: 8080
