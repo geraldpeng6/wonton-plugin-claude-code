@@ -26,7 +26,7 @@ services:
       DISABLE_AUTOUPDATER: "1"
       DISABLE_TELEMETRY: "1"
       DISABLE_ERROR_REPORTING: "1"
-      # 出网代理由核心注入（ADR-0023），这里不写代理变量，写了空值就会把核心的注入顶掉。
+      # 出网代理由核心注入，这里不写代理变量：写空等于这个服务不走代理（见 plugin-spec.md#网络）。
     volumes:
       - ${WONTON_BOT_DATA:?需要 Bot 数据目录}/agent:/data/agent
       - ${WONTON_BOT_DATA}/run:/data/run
