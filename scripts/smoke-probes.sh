@@ -4,8 +4,9 @@
 IDENTITY_NA=1
 SMOKE_NOTE="claude-code 没有应用账号体系或插件自己的 MCP 服务，登录网页登的是 Anthropic 官方账号；主人身份、插件工具两项不适用。专项验收验证加密 Matrix 私聊、模型回答和 Wonton MCP 只读工具。"
 
-web_assert() { # 标准输入：登录网页（底座 wonton-agent 的登录页，经 web 服务转发）
-  grep -q '<title>登录</title>' && grep -q '云吞'
+web_assert() { # 标准输入：登录网页（底座 wonton-agent 的登录页，经 web 服务转发）。
+  # 只用一个 grep：web_assert 的标准输入只能读一遍（两个 grep 会把第二趟读成空）。
+  grep -q '云吞页面令牌'
 }
 
 # 数据：Agent 的工作区文件和登录态会话之间一直在用（docker-compose.yml 的 ${WONTON_BOT_DATA}/workspace、agent 卷）。
