@@ -54,7 +54,9 @@ services:
       WONTON_AGENT_WORKSPACE: /workspace
       WONTON_MATRIX_HOMESERVER: ${WONTON_MATRIX_HOMESERVER:?需要 Matrix 地址}
       WONTON_MATRIX_ACCESS_TOKEN: ${WONTON_MATRIX_ACCESS_TOKEN:?需要 Bot 的 Matrix 访问令牌}
-      WONTON_MATRIX_OWNER: ${WONTON_MATRIX_OWNER:?需要主人的 Matrix 用户 ID}
+      # 名单变量 0.9 起改叫 WONTON_MATRIX_ALLOWED_USERS；两个名字都传，新旧桥都能读。
+      WONTON_MATRIX_ALLOWED_USERS: ${WONTON_MATRIX_ALLOWED_USERS:-${WONTON_MATRIX_OWNER:?需要主人的 Matrix 用户 ID}}
+      WONTON_MATRIX_OWNER: ${WONTON_MATRIX_OWNER:-${WONTON_MATRIX_ALLOWED_USERS:?需要主人的 Matrix 用户 ID}}
       WONTON_MATRIX_HOME_ROOM: ${WONTON_MATRIX_HOME_ROOM:?需要主人与 Bot 的主房间}
       WONTON_MCP_URL: ${WONTON_MCP_URL:?需要 MCP 总线地址}
       # Claude Code 的 default 模式每次都问（改文件、跑命令都出确认卡片），和 Codex 的 read-only 同一种手感；
@@ -91,7 +93,7 @@ services:
 x-wonton:
   spec: "0.6"
   id: ai.claude-code
-  version: 0.1.0
+  version: 0.1.1
   kind: agent
   title: { zh: Claude Code, en: Claude Code }
   description:
