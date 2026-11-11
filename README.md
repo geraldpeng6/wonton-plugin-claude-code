@@ -1,6 +1,6 @@
 # Claude Code
 
-开发流程见[插件开发指南](https://github.com/geraldpeng6/wonton-docs/blob/main/develop.md)。
+开发流程见[插件开发指南](https://github.com/wontonapp/wonton-docs/blob/main/develop.md)。
 
 Claude Code 是住在云吞里的 Agent：Anthropic 的 Claude Code（经官方的 claude-agent-acp 适配器说 ACP）
 用核心分配的 Matrix 身份和主人聊天，经 Wonton MCP 总线调用工具。改文件、跑命令之前出确认卡片，
