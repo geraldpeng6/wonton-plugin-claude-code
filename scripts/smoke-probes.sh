@@ -11,7 +11,14 @@ web_assert() { # 标准输入：登录网页（底座 wonton-agent 的登录页�
 
 # 数据：Agent 的工作区文件和登录态会话之间一直在用（docker-compose.yml 的 ${WONTON_BOT_DATA}/workspace、agent 卷）。
 # data_write 在 agent 容器的工作区落一个标记文件，data_check 在升级、重装后读回比对；内容带随机令牌。
-_cc_container() { printf 'wonton-%s--%s--agent' "${SMOKE_INSTANCE:-}" "${SMOKE_SLUG:-}"; }
+_cc_agent_container() { # 容器按核心打的标签找，不拼名字：钩子契约里没有 slug，e2e 的 data_write 又跑在实例名导出之前；Bot 服务的容器名还带 --<Bot 名> 后缀
+  local inst="${SMOKE_INSTANCE:-}" args=(--filter label=wonton.plugin=ai.claude-code --filter label=wonton.service=agent)
+  if [[ -z "$inst" && -n "${SMOKE_BASE:-}" ]]; then
+    inst="${SMOKE_BASE#http://}"; inst="${inst%%.*}"
+  fi
+  [[ -z "$inst" ]] || args+=(--filter "label=wonton.instance=${inst//-/}")
+  docker ps --format '{{.Names}}' "${args[@]}" | head -1
+}
 
 _cc_marker_file() { # 标记文件：SMOKE_STATE 在 dev.sh probes 里是目录，目录里放标记文件
   if [[ -d "${SMOKE_STATE:-}" ]]; then printf '%s/data-marker' "$SMOKE_STATE"; else printf '%s' "${SMOKE_STATE:-}"; fi
@@ -19,7 +26,8 @@ _cc_marker_file() { # 标记文件：SMOKE_STATE 在 dev.sh probes 里是目录�
 
 data_write() {
   local container token out
-  container="$(_cc_container)"
+  container="$(_cc_agent_container)"
+  [[ -n "$container" ]] || { echo "找不到 agent 容器（wonton.plugin=ai.claude-code 标签）"; return 1; }
   token="wonton-smoke-$(od -An -N8 -tx1 /dev/urandom | tr -d ' \n')"
   docker exec "$container" sh -c "printf 'wonton-smoke %s\n' '$token' > /workspace/wonton-smoke-marker" ||
     { echo "往 $container:/workspace 写标记失败"; return 1; }
@@ -30,7 +38,8 @@ data_write() {
 
 data_check() {
   local container token out
-  container="$(_cc_container)"
+  container="$(_cc_agent_container)"
+  [[ -n "$container" ]] || { echo "找不到 agent 容器（wonton.plugin=ai.claude-code 标签）"; return 1; }
   token="$(cat "$(_cc_marker_file)" 2>/dev/null)" || true
   [[ -n "$token" ]] || { echo "没有 data_write 留下的标记（SMOKE_STATE=${SMOKE_STATE:-未设置}）"; return 1; }
   out="$(docker exec "$container" cat /workspace/wonton-smoke-marker 2>/dev/null)" ||
